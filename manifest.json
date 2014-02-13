@@ -1,0 +1,12 @@
+{
+  "name": "Time Logger",
+  "author": {
+    "name": "Joseph McCarron",
+    "email": "joe@zendesk.com"
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "location": "ticket_sidebar",
+  "version": "1.0",
+  "frameworkVersion": "0.5"
+}
