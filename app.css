@@ -1,0 +1,19 @@
+ul {
+  margin: 0;
+  li.actions {
+    text-align: right;
+  }
+  li {
+    width: 100%;
+    margin-bottom: 20px;
+    span.field {
+      width: 200px;
+      input.time {
+        width: 50px;
+      }
+    }
+  }
+  li:last-child {
+    margin-bottom: 0;
+  }
+}

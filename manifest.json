@@ -8,5 +8,28 @@
   "private": true,
   "location": "ticket_sidebar",
   "version": "1.0",
-  "frameworkVersion": "0.5"
+  "frameworkVersion": "0.5",
+  "parameters":[
+    {
+      "name":"total_time_field_id",
+      "type":"number",
+      "required":true,
+      "default":21525144
+    },
+    {
+      "name":"billable_time_field_id",
+      "type":"number",
+      "default":21682140
+    },
+    {
+      "name":"external_time_field_id",
+      "type":"number",
+      "default":21525134
+    },
+    {
+      "name":"date_field_id",
+      "type":"number",
+      "default":21683980
+    }
+  ]
 }

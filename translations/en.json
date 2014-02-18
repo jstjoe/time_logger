@@ -2,17 +2,23 @@
   "app": {
     "package": "app_name",
     "description": {
-      "value": "Play the famous zen tunes in your help desk.",
+      "value": "Log time on tickets manually with optional parameters.",
       "title": "app description"
     },
     "name": {
-      "value": "Buddha Machine",
+      "value": "Time Logger",
       "title": "app name"
+    },
+    "parameters": {
+      "total_time_field_id" : { "label": "ID of Total Time field", "helpText": "If one does not exist, create a custom numeric ticket field for storing cumulative total time." },
+      "billable_time_field_id"     : { "label": "ID of Billable Time field", "helpText": "Optional: a custom numeric ticket field for storing cumulative billable time." },
+      "external_time_field_id"    : { "label": "ID of External Time field", "helpText": "Optional: a custom numeric ticket field for storing cumulative external time." },
+      "date_field_id"     : { "label": "ID of Date field", "helpText": "If one does not exist, create a custom text ticket field for storing dates." }
     }
   },
 
   "loading": {
-    "value": "Welcome to this Sample App",
+    "value": "Welcome to the Time Logger",
     "title": "loading placeholder"
   },
 

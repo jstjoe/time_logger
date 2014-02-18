@@ -1,0 +1,38 @@
+<ul class="form">
+  <form>
+  <li class="time">
+    <span class="field">
+      Amount of time (hrs): <input type="number" class="time" name="time" step=".1">
+    </span>
+  </li>
+  <li class="external">
+    External? 
+    <span class="field">
+      <select class="external" name="select" required>
+        <option disabled>Choose one...</option>
+        <option class="external" value="external">external</option>
+        <option class="external" value="internal">internal</option>
+      </select>
+    </span>
+  </li>
+  <li class="billable">
+    Billable? 
+    <span class="field">
+      <select class="external" name="select" required>
+        <option disabled>Choose one...</option>
+        <option class="billable" value="billable">billable</option>
+        <option class="billable" value="non-billable">non-billable</option>
+      </select>
+    </span>
+  </li>
+  <li class="date">
+    <span class="field">
+      Date delivered: <input type="date" class="date" name="date">
+    </span>
+  </li>
+  </form>
+  <br>
+  <li class="actions">
+    <a href="#" class="cancel_button">Cancel</a> | <a href="#" class="log_time">Log Time</a>
+  </li>
+</ul>
