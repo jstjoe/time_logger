@@ -1,0 +1,5 @@
+<div class="organizations">
+  Find Organization: <input type="search" class="search" id="input" name="search_orgs"></input> <a href="#" class="search" id="enter">Search</a> | 
+  Start Date (UTC): <input type="date" class="start_date" name="start_date"></input> | 
+  End Date (UTC): <input type="date" class="end_date" name="end_date"></input> 
+</div>

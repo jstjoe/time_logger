@@ -6,7 +6,7 @@
   },
   "defaultLocale": "en",
   "private": true,
-  "location": "ticket_sidebar",
+  "location": ["ticket_sidebar","nav_bar"],
   "version": "1.0",
   "frameworkVersion": "0.5",
   "parameters":[
@@ -14,17 +14,17 @@
       "name":"total_time_field_id",
       "type":"number",
       "required":true,
-      "default":21525144
+      "default":21691654
     },
     {
       "name":"billable_time_field_id",
       "type":"number",
-      "default":21682140
+      "default":21691664
     },
     {
       "name":"external_time_field_id",
       "type":"number",
-      "default":21525134
+      "default":21850650
     },
     {
       "name":"date_field_id",

@@ -2,24 +2,22 @@
   <form>
   <li class="time">
     <span class="field">
-      Amount of time (hrs): <input type="number" class="time" name="time" step=".1">
+      Amount of time (hrs): <input type="number" class="time" name="time" step=".25" min="0" autofocus>
     </span>
   </li>
   <li class="external">
     External? 
     <span class="field">
       <select class="external" name="select" required>
-        <option disabled>Choose one...</option>
-        <option class="external" value="external">external</option>
         <option class="external" value="internal">internal</option>
+        <option class="external" value="external">external</option>
       </select>
     </span>
   </li>
   <li class="billable">
     Billable? 
     <span class="field">
-      <select class="external" name="select" required>
-        <option disabled>Choose one...</option>
+      <select class="billable" name="select" required>
         <option class="billable" value="billable">billable</option>
         <option class="billable" value="non-billable">non-billable</option>
       </select>
@@ -27,7 +25,7 @@
   </li>
   <li class="date">
     <span class="field">
-      Date delivered: <input type="date" class="date" name="date">
+      Date delivered: <input type="date" class="date" name="date" required>
     </span>
   </li>
   </form>

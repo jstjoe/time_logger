@@ -1,0 +1,8 @@
+<div class="organizations">
+  <input type="search" class="organizations" name="organizations"></input> <a href="#" class="organizations">Search</a>
+  <!-- <select>
+    {{each organizations}}
+      <option value="{{organization.id}}">{{organization.name}}</option>
+    {{/each}}
+  </select> -->
+</div>
