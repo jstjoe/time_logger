@@ -30,6 +30,11 @@
       "name":"date_field_id",
       "type":"number",
       "default":21683980
+    },
+    {
+      "name":"days_back",
+      "type":"number",
+      "default":30
     }
   ]
 }
