@@ -7,7 +7,6 @@
       'click .default':'loadTime',
       'click .cancel_button':'loadDefault',
       'click .log_time':'buildLog',
-      'click #input':'startAutocomplete',
       'keyup #input':'onSearchChanged'
       //'ticket.custom_field_{{total_time_field_id}}':'loadTime'
     },
@@ -55,7 +54,6 @@
         this.disableFields();
         this.switchTo('form');
       } else if (currentLocation == 'nav_bar') {
-        this.startAutocomplete();
         this.switchTo('search');
       }
     },
@@ -76,8 +74,6 @@
     buildLog: function() {
       var log = {};
       log.units = parseFloat( this.$("input.time").val(), 10);
-      // console.log("Time: " + log.units);
-
       if (this.$("select.external").val() == "external") {
         log.external = true;
         log.external_time = log.units;
@@ -85,10 +81,6 @@
         log.external = false;
         log.internal_time = log.units;
       }
-      // console.log("External? " + log.external);
-      // console.log("External time: " + log.external_time);
-      // console.log("Internal time: " + log.internal_time);
-
       if (this.$("select.billable").val() == "billable") {
         log.billable = true;
         log.billable_time = log.units;
@@ -96,12 +88,7 @@
         log.billable = false;
         log.non_billable_time = log.units;
       }
-      // console.log("Billable? " + log.billable);
-      // console.log("Billable time: " + log.billable_time);
-      // console.log("Non-billable time: " + log.non_billable_time);
-
       log.date = this.$("input.date").val();
-      // console.log("Date: " + log.date);
       this.buildUpdate(log);
     },
     buildUpdate: function(log) {
@@ -134,14 +121,6 @@
       console.log(payload);
       this.ajax('updateTicket', payload);
     },
-    startAutocomplete: function() {
-      //fire this whenever someone clicks in the search field
-      console.log("startAutocomplete fired!");
-      //have it set up an event listener on the search field text input
-      
-      //if true check the number of characters (min 2)
-      //if true fire the getOrgsAuto request with the text formatted as a query
-    },
     onSearchChanged: function() {
       var name = this.$('#input').val();
       console.log("Name: " + name);
@@ -157,20 +136,16 @@
     getLogsFromTickets: function() {
       var ticket = this.ticket();
       this.ajax('getTicketAudits').done( function (data) {
-        //parse ticketAudits into an object, then pass that to the show template
+        //parse ticketAudits into an object containing sum amounts of time given the specified date range
         var ticketAudits = data.audits;
         _.each(ticketAudits, function(audit) {
           _.each(audit.events, function(event){
             // TODO: check events for field_names matching the fields specified in settings
-              //...if true: grab the info and generate content from it... 
+              //...if true: grab the info and process it
             console.log(event.field_name);
           });
         });
-        //this.switchTo('show', {
-        //  ticket:     ticket,
-        //  loggedTime: loggedTime,
-        //  audits:     ticketAudits
-        //});
+    
       });
     },
     // ##Helpers

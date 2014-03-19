@@ -31,6 +31,6 @@
   </form>
   <br>
   <li class="actions">
-    <a href="#" class="cancel_button">Cancel</a> | <a href="#" class="log_time">Log Time</a>
+    <button class="cancel_button btn">Cancel</button> | <button class="log_time btn">Log Time</button>
   </li>
 </ul>
