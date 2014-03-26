@@ -7,7 +7,10 @@
       'click .default':'loadTime',
       'click .cancel_button':'loadDefault',
       'click .log_time':'buildLog',
-      'keyup #input':'onSearchChanged'
+      'keyup #input':'onSearchChanged',
+      'click .search':'getListOfTickets',
+      'getTicketAuditsByID.done':'storeAudits',
+      'getTicketAuditsByPage.done':'storeAudits'
       //'ticket.custom_field_{{total_time_field_id}}':'loadTime'
     },
     // #Requests
@@ -22,6 +25,13 @@
           data: query.payload
         };
       },
+      getOrgTickets: function (org) {
+        return {
+          url: helpers.fmt('/api/v2/organizations/%@/tickets.json',org),
+          type: 'GET',
+          proxy_v2: true
+        };
+      },
       // getTicket: function () {
       //   //use this only after updating the ticket asynchronously
       //   return {
@@ -29,19 +39,17 @@
       //     type: 'GET'
       //   };
       // },
-      getTicketAudits: function (page) {
-        if(page) {
-          return {
-            url: helpers.fmt('/api/v2/tickets/%@/audits.json?page=%@', this.ticket().id(), page),
-            type: 'GET'
-          };
-        } else {
-          return {
-            url: helpers.fmt('/api/v2/tickets/%@/audits.json', this.ticket().id()),
-            type: 'GET'
-          };
-        }
-        
+      getTicketAuditsByID: function (id) {
+        return {
+          url: helpers.fmt('/api/v2/tickets/%@/audits.json', id),
+          type: 'GET'
+        };
+      },
+      getTicketAuditsByPage: function (page) {
+        return {
+          url: helpers.fmt('/api/v2/tickets/%@/audits.json?page=%@', id, page),
+          type: 'GET'
+        };
       },
       updateTicket: function (payload) {
         return {
@@ -140,23 +148,43 @@
           "string":name,
           "payload":"\"{'name': '" + name + "'}\""
         };
-        //this scope is whacked
         this.ajax('getOrgsAuto',query);
       }
     },
-    getLogsFromTickets: function() {
-      var ticket = this.ticket();
-      this.ticketAudits = [];
-      this.ajax('getTicketAudits');
+    getListOfTickets: function() {
+      var org_id = this.$('input.search').val();
+      this.ajax('getOrgTickets', org_id);
+      //TODO: Handle multiple pages of tickets
     },
-    parseAudits: function (data) {
-      this.ticketAudits = data.audits.concat(ticketAudits);
+    getLogsFromTickets: function(data) {
+      var tickets = data.tickets;
+      this.ticketAudits = [];
+
+      //loop through each ticket in the array
+      _.each(tickets, function (ticket) {
+        this.ajax('getTicketAuditsByID', ticket.id);
+
+        //TODO: if the ticket is the last in the array send some signal to stop so parseAudits can be triggered
+      });
+
+      
+    },
+    storeAudits: function (data, end) {
+      var ticketAudits = data.audits;
+      this.ticketAudits = this.ticketAudits.concat(ticketAudits);
       if(data.next_page) {
-        this.ajax('getTicketAudits', data.next_page);
+        this.ajax('getTicketAuditsByPage', data.next_page);
       } else {
-        var total_time_field = this.setting('total_time_field_id'),
-          billable_time_field = this.setting('billable_time_field_id'),
-          external_time_field = this.setting('external_time_field_id');
+        if (end) {
+          //end isn't being sent yet
+          this.parseAudits();
+        }
+      }
+    },
+    parseAudits: function () {
+      var total_time_field = this.setting('total_time_field_id'),
+        billable_time_field = this.setting('billable_time_field_id'),
+        external_time_field = this.setting('external_time_field_id');
 
       var getDelta = function(event) {
         var delta = event.value - event.previous_value;
@@ -168,7 +196,8 @@
         external_time_entries = [],
         event_entries = [];
 
-      _.each(ticketAudits, function(audit) {
+      //the stage is set, now iterate over all the audits, grab those in range, and build them into logs  
+      _.each(this.ticketAudits, function(audit) {
         var date_field = this.setting('date_field_id'),
           start_date = Date.parse(this.$('.start_date').val()),
           end_date = Date.parse(this.$('.end_date').val()),
@@ -178,10 +207,11 @@
 
         if(date_value >= start_date && date_value <= end_date) {
         //IF the date field value in this audit is between the start and end dates...
-        //TODO refactor: if this works without error change to findWhere for efficiency
+        
           var total_time_event = _.where(audit.events, {field_name: total_time_field}),
             billable_time_event = _.where(audit.events, {field_name: billable_time_field}),
             external_time_event = _.where(audit.events, {field_name: external_time_field});
+          //TODO refactor: if this works without error change where to findWhere for efficiency
 
           var total_delta = getDelta(total_time_event),
             billable_delta = getDelta(billable_time_event),
@@ -200,16 +230,7 @@
           event_entries.push(compound_entry);
         }
       });
-
-
-
-
-      }
-      //parse ticketAudits into an object containing sum amounts of time given the specified date range
-      
-      
-      
-      
+      console.log(event_entries);
     },
     // ##Helpers
     totalTimeFieldLabel: function() {
