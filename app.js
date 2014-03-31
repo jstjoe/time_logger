@@ -45,7 +45,7 @@
           type: 'GET'
         };
       },
-      getTicketAuditsByPage: function (page) {
+      getTicketAuditsByPage: function (id, page) {
         return {
           url: helpers.fmt('/api/v2/tickets/%@/audits.json?page=%@', id, page),
           type: 'GET'
@@ -149,6 +149,9 @@
           "payload":"\"{'name': '" + name + "'}\""
         };
         this.ajax('getOrgsAuto',query);
+        //we need to render the organization options and allow the user to select one
+
+
       }
     },
     getListOfTickets: function() {
@@ -248,6 +251,33 @@
     buildFieldLabel: function(id) {
       return helpers.fmt('custom_field_%@', id);
     },
+    // paginate: function(a) {
+    //   var results = [];
+    //   var initialRequest = this.ajax(a.request, a.id, a.page);
+    //   // create and return a promise chain of requests to subsequent pages
+    //   var allPages = initialRequest.then(function(data){
+    //     results.push(data[a.entity]);
+    //     var nextPages = [];
+    //     var pageCount = Math.ceil(data.count / 100);
+    //     for (; pageCount > 1; --pageCount) {
+    //       nextPages.push(this.ajax(a.request, a.id, pageCount));
+    //     }
+    //     return this.when.apply(this, nextPages).then(function(){
+    //       var entities = _.chain(arguments)
+    //                       .flatten()
+    //                       .filter(function(item){ return (_.isObject(item) && _.has(item, a.entity)); })
+    //                       .map(function(item){ return item[a.entity]; })
+    //                       .value();
+    //       results.push(entities);
+    //     }).then(function(){
+    //       return _.chain(results)
+    //               .flatten()
+    //               .compact()
+    //               .value();
+    //     });
+    //   });
+    //   return allPages;
+    // }
   };
 
 }());

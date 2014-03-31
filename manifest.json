@@ -8,7 +8,7 @@
   "private": true,
   "location": ["ticket_sidebar","nav_bar"],
   "version": "1.0",
-  "frameworkVersion": "0.5",
+  "frameworkVersion": "1.0",
   "parameters":[
     {
       "name":"total_time_field_id",
