@@ -12,7 +12,7 @@
       'keyup #input':'onSearchChanged',
       'getOrgsAuto.done':'handleOrgs',
       'click .org':'handleOrgSelection',
-      'click .search':'getListOfTickets',
+      'click .search':'listTickets',
     },
 
     // #Requests
@@ -217,18 +217,56 @@
                               id      : tkt_id,
                               page    : 1 });
         audits.done(_.bind(function(audits){
-          this.ticketsWithLogs[tkt_id] = this.parseAudits(audits);
-          // console.log("Calling parse audits for ticket " + tkt_id);
-          console.log(this.ticketsWithLogs[tkt_id]);
-          console.log(this.ticketsWithLogs);
-          this.switchTo('results', {
-            tickets: this.ticketsWithLogs
+          var eventEntries = this.parseAudits(audits),
+            sumTotalTime = eventEntries;
+          var total_time_entries = _.map(eventEntries, function(entry, key) {
+            return entry.total_time;
           });
+          var billable_time_entries = _.map(eventEntries, function(entry, key) {
+            return entry.billable_time;
+          });
+          var external_time_entries = _.map(eventEntries, function(entry, key) {
+            return entry.external_time;
+          });
+          
+          var sum_total_time_entries = _.reduce(total_time_entries, function(memo, num){ return memo + num; }, 0);
+          var sum_billable_time_entries = _.reduce(billable_time_entries, function(memo, num){ return memo + num; }, 0);
+          var sum_external_time_entries = _.reduce(external_time_entries, function(memo, num){ return memo + num; }, 0);
+          var sum_non_billable = sum_total_time_entries - sum_billable_time_entries;
+          var sum_internal = sum_total_time_entries - sum_external_time_entries;
+          console.log(total_time_entries);
+          console.log(sum_total_time_entries);
+
+
+            // billable_time_entries = [],
+            // external_time_entries = [];
+
+            //calculate sums and add them to the object below
+          this.ticketsWithLogs[tkt_id] = {
+            "entries": eventEntries,
+            "sum_total": sum_total_time_entries,
+            "sum_billable": sum_billable_time_entries,
+            "sum_non_billable": sum_non_billable,
+            "sum_external": sum_external_time_entries,
+            "sum_internal": sum_internal
+
+          };
+          // console.log("Calling parse audits for ticket " + tkt_id);
+          // console.log(this.ticketsWithLogs[tkt_id]);
+          // console.log(this.ticketsWithLogs);
+          // this.switchTo('results', {
+          //   tickets: this.ticketsWithLogs
+          // });
         }, this));
 
       }.bind(this));
       // console.log(this.ticketsWithLogs);
       
+    },
+    listTickets: function (tickets) {
+      this.switchTo('results', {
+        tickets: this.ticketsWithLogs
+      });
     },
     parseAudits: function (audits) {
       var total_time_field = this.setting('total_time_field_id').toString(),
@@ -297,19 +335,22 @@
               // billable_delta = getDelta(billable_time_event[0]) || 0,
               // external_delta = getDelta(external_time_event[0]) || 0;
 
+            
+
+            // console.log(compound_entry);
+            // total_time_entries.push(total_delta);
+            // billable_time_entries.push(billable_delta);
+            // external_time_entries.push(external_delta);
+
             var compound_entry = {
               'total_time': total_delta,
               'billable_time': billable_delta,
               'external_time': external_delta,
               'date': date_value
             };
-
-            // console.log(compound_entry);
-            total_time_entries.push(total_delta);
-            billable_time_entries.push(billable_delta);
-            external_time_entries.push(external_delta);
             event_entries.push(compound_entry);
           }
+
         }
 
       });
