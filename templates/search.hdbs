@@ -8,11 +8,13 @@
         Start Date (UTC): <input class="start_date" name="start_date"></input> 
       </span>
       <span class="field">
-        End Date (UTC): <input class="end_date" name="end_date"></input> | <button class="search btn btn-primary" id="enter">Search</button>
+        End Date (UTC): <input class="end_date" name="end_date"></input> | <button class="search btn btn-primary" id="enter">Search</button><input></input>
       </span>
     </li>
     <li>
-
+      <div class="org_results">
+        <!--inject organizations here-->
+      </div>
     </li>
   </ul>
 </div>

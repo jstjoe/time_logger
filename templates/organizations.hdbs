@@ -1,5 +1,3 @@
-<div class="organizations">
-  {{#each organization}}
-    {{organization.name}} - {{organization.id}}
-  {{/each}}
-</div>
+<ul class="orgs">
+  {{#each orgs}}<li class="org" value="{{id}}">{{name}}</li>{{/each}}
+</ul>

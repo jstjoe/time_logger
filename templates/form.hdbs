@@ -25,7 +25,7 @@
   </li>
   <li class="date">
     <span class="field">
-      Date delivered: <input type="date" class="date" name="date" required>
+      Date delivered: <input class="date" name="date" required></input>
     </span>
   </li>
   </form>
