@@ -1,0 +1,11 @@
+<ul class="tickets">
+  {{#each tickets}}
+    <li class="ticket">
+      <ul class="entries">
+        {{#each this}}
+          <li>Date: {{date}} | Total: {{total_time}} | Billable: {{billable_time}} | External: {{external_time}}</li>
+        {{/each}}
+      </ul>
+    </li>
+  {{/each}}
+</ul>

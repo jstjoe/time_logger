@@ -2,7 +2,7 @@
   <form>
   <li class="time">
     <span class="field">
-      Amount of time (hrs): <input type="number" class="time" name="time" step=".25" min="0" autofocus>
+      Amount of time (hrs): <input type="number" class="time" name="time" step=".25" autofocus>
     </span>
   </li>
   <li class="external">

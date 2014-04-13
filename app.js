@@ -13,11 +13,8 @@
       'getOrgsAuto.done':'handleOrgs',
       'click .org':'handleOrgSelection',
       'click .search':'getListOfTickets',
-
-      // 'getTicketAuditsByID.done':'storeAudits',
-      // 'getTicketAuditsByPage.done':'storeAudits'
-      //'ticket.custom_field_{{total_time_field_id}}':'loadTime'
     },
+
     // #Requests
     requests: {
       getOrgsAuto: function (query) {
@@ -37,25 +34,12 @@
           proxy_v2: true
         };
       },
-      // getTicket: function () {
-      //   //use this only after updating the ticket asynchronously
-      //   return {
-      //     url: helpers.fmt('/api/v2/tickets/%@.json',this.ticket().id()),
-      //     type: 'GET'
-      //   };
-      // },
       getTicketAudits: function (id, page) {
         return {
           url: helpers.fmt('/api/v2/tickets/%@/audits.json?page=%@', id, page),
           type: 'GET'
         };
       },
-      // getTicketAuditsByPage: function (id, page) {
-      //   return {
-      //     url: helpers.fmt('/api/v2/tickets/%@/audits.json?page=%@', id, page),
-      //     type: 'GET'
-      //   };
-      // },
       updateTicket: function (payload) {
         return {
           url: helpers.fmt('/api/v2/tickets/%@.json',this.ticket().id()),
@@ -67,6 +51,7 @@
         };
       }
     },
+
     // #Functions
     loadDefault: function() {
       var currentLocation = this.currentLocation();
@@ -89,15 +74,17 @@
 
       this.switchTo('form');
     },
+
     // ##Methods
     disableFields: function() {
-      _.each([this.totalTimeFieldLabel(), this.billableTimeFieldLabel(), this.externalTimeFieldLabel(), this.dateFieldLabel()], function(f) {
+      _.each([this.totalTimeFieldLabel(), this.billableTimeFieldLabel(), this.externalTimeFieldLabel()], function(f) {
         var field = this.ticketFields(f);
         if (field) {
           field.disable();
           // console.log("Hiding field " + field);
         }
       }, this);
+      this.ticketFields(this.dateFieldLabel()).hide();
     },
     buildLog: function() {
       var log = {};
@@ -125,8 +112,12 @@
         total_time = ( log.units + parseFloat(tkt.customField(this.totalTimeFieldLabel()), 10)),
         billable_time = ( log.billable_time + parseFloat(tkt.customField(this.billableTimeFieldLabel()), 10)),
         external_time = ( log.external_time + parseFloat(tkt.customField(this.externalTimeFieldLabel()), 10)),
-        update = {"ticket":
-        {"custom_fields":[
+        update = {"ticket": {
+          "metadata": {
+            "time_logged": true,
+            "log_date": log.date
+          },
+          "custom_fields":[
           {
             "id": this.setting('total_time_field_id'),
             "value": total_time
@@ -149,6 +140,25 @@
       console.log(payload);
       this.ajax('updateTicket', payload);
     },
+    onTicketUpdateSuccess: function(response) {
+      services.notify("Ticket successfully updated with time log. Refresh to see changes.");
+      console.log("Ticket successfully updated.");
+      // hide the specified ticket fields?
+      _.each([this.totalTimeFieldLabel(), this.billableTimeFieldLabel(), this.externalTimeFieldLabel()], function(f) {
+        var field = this.ticketFields(f);
+        if (field) {
+          field.hide();
+          // console.log("Hiding field " + field);
+        }
+      }, this);
+
+      // handle response data, pull specified ticket fields, display in success template
+      var updatedTicket = response.ticket;
+      // this.switchTo('success', {
+          // send the ticket field data to the success template
+      // });
+    },
+
 
     //  ##nav bar functions
     onSearchChanged: function() {
@@ -207,27 +217,19 @@
                               id      : tkt_id,
                               page    : 1 });
         audits.done(_.bind(function(audits){
-          this.ticketsWithLogs.tkt_id = this.parseAudits(audits);
+          this.ticketsWithLogs[tkt_id] = this.parseAudits(audits);
           // console.log("Calling parse audits for ticket " + tkt_id);
-          console.log(this.ticketsWithLogs.tkt_id);
+          console.log(this.ticketsWithLogs[tkt_id]);
+          console.log(this.ticketsWithLogs);
+          this.switchTo('results', {
+            tickets: this.ticketsWithLogs
+          });
         }, this));
 
       }.bind(this));
-      console.log(this.ticketsWithLogs);
+      // console.log(this.ticketsWithLogs);
       
     },
-    // storeAudits: function (data, end) {
-    //   var ticketAudits = data.audits;
-    //   this.ticketAudits = this.ticketAudits.concat(ticketAudits);
-    //   if(data.next_page) {
-    //     this.ajax('getTicketAuditsByPage', data.next_page);
-    //   } else {
-    //     if (end) {
-    //       //end isn't being sent yet
-    //       this.parseAudits();
-    //     }
-    //   }
-    // },
     parseAudits: function (audits) {
       var total_time_field = this.setting('total_time_field_id').toString(),
         billable_time_field = this.setting('billable_time_field_id').toString(),
@@ -250,18 +252,25 @@
       //the stage is set, now iterate over all the audits, grab those in range, and build them into logs  
       _.each(audits, function(audit) {
         var date_field_event = _.filter(audit.events, function(event){ return event.field_name == date_field ;});//_.where(audit.events, {field_name: date_field}),
-        if(date_field_event[0]) {
-          var date_value = Date.parse(date_field_event[0].value);
+        var total_time_event = _.filter(audit.events, function(event){ return event.field_name == total_time_field ;}), //_.where(audit.events, {field_name: total_time_field}),
+          billable_time_event = _.filter(audit.events, function(event){ return event.field_name == billable_time_field ;}), //_.where(audit.events, {field_name: billable_time_field}),
+          external_time_event = _.filter(audit.events, function(event){ return event.field_name == external_time_field ;}); //_.where(audit.events, {field_name: external_time_field});
+
+        if(date_field_event[0] || audit.metadata.custom.time_logged) {
+          
+          var date_value;
+          if(date_field_event[0]) {
+            date_value = Date.parse(date_field_event[0].value);
+          } else {
+            date_value = Date.parse(audit.metadata.custom.log_date);
+          }
           // console.log("Start date: " + start_date);
           // console.log("Date value: " + date_value);
           // console.log("End date:   " + end_date);
           if(date_value >= start_date && date_value <= end_date) {
           //IF the date field value in this audit is between the start and end dates...
             // console.log(date_field_event);
-            var total_time_event = _.filter(audit.events, function(event){ return event.field_name == total_time_field ;}), //_.where(audit.events, {field_name: total_time_field}),
-              billable_time_event = _.filter(audit.events, function(event){ return event.field_name == billable_time_field ;}), //_.where(audit.events, {field_name: billable_time_field}),
-              external_time_event = _.filter(audit.events, function(event){ return event.field_name == external_time_field ;}); //_.where(audit.events, {field_name: external_time_field});
-
+            
             //IF the event exists
             var total_delta,
               billable_delta,
@@ -308,10 +317,7 @@
       return event_entries;
       //push event entries from each ticket to an object containing all the tickets in range, and their entries
     },
-    onTicketUpdateSuccess: function() {
-      services.notify("Ticket successfully updated with time log. Refresh to see changes.");
-      console.log("Ticket successfully updated.");
-    },
+    
 
     // ##Helpers
     totalTimeFieldLabel: function() {
