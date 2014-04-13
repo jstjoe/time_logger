@@ -9,15 +9,16 @@
       'click .log_time':'buildLog',
       'keyup #input':'onSearchChanged',
       'click .search':'getListOfTickets',
-      'getTicketAuditsByID.done':'storeAudits',
-      'getTicketAuditsByPage.done':'storeAudits'
+      'updateTicket.done':'onTicketUpdateSuccess'
+      // 'getTicketAuditsByID.done':'storeAudits',
+      // 'getTicketAuditsByPage.done':'storeAudits'
       //'ticket.custom_field_{{total_time_field_id}}':'loadTime'
     },
     // #Requests
     requests: {
       getOrgsAuto: function (query) {
         return {
-          url: helpers.fmt('/api/v2/organizations/autocomplete.json?name=%@',query.string),
+          url: helpers.fmt('/api/v2/organizations/autocomplete.json?name=%@', query.string),
           type: 'POST',
           dataType: 'JSON',
           contentType: 'application/JSON',
@@ -25,9 +26,9 @@
           data: query.payload
         };
       },
-      getOrgTickets: function (org) {
+      getOrgTickets: function (id, page) {
         return {
-          url: helpers.fmt('/api/v2/organizations/%@/tickets.json',org),
+          url: helpers.fmt('/api/v2/organizations/%@/tickets.json?page=%@', id, page),
           type: 'GET',
           proxy_v2: true
         };
@@ -39,18 +40,18 @@
       //     type: 'GET'
       //   };
       // },
-      getTicketAuditsByID: function (id) {
-        return {
-          url: helpers.fmt('/api/v2/tickets/%@/audits.json', id),
-          type: 'GET'
-        };
-      },
-      getTicketAuditsByPage: function (id, page) {
+      getTicketAudits: function (id, page) {
         return {
           url: helpers.fmt('/api/v2/tickets/%@/audits.json?page=%@', id, page),
           type: 'GET'
         };
       },
+      // getTicketAuditsByPage: function (id, page) {
+      //   return {
+      //     url: helpers.fmt('/api/v2/tickets/%@/audits.json?page=%@', id, page),
+      //     type: 'GET'
+      //   };
+      // },
       updateTicket: function (payload) {
         return {
           url: helpers.fmt('/api/v2/tickets/%@.json',this.ticket().id()),
@@ -140,6 +141,8 @@
       console.log(payload);
       this.ajax('updateTicket', payload);
     },
+
+    //  ##nav bar functions
     onSearchChanged: function() {
       var name = this.$('#input').val();
       console.log("Name: " + name);
@@ -148,27 +151,38 @@
           "string":name,
           "payload":"\"{'name': '" + name + "'}\""
         };
-        this.ajax('getOrgsAuto',query);
-        //we need to render the organization options and allow the user to select one
+        this.ajax('getOrgsAuto',query).done(function(response) {
 
-
+          //we need to render the organization options and allow the user to select one
+        });
       }
     },
     getListOfTickets: function() {
-      var org_id = this.$('input.search').val();
-      this.ajax('getOrgTickets', org_id);
-      //TODO: Handle multiple pages of tickets
+      var org_id = this.$('input.search_field').val();
+      //console.log(org_id);
+      var tickets = this.paginate({request : 'getOrgTickets',
+                              entity  : 'tickets',
+                              id      : org_id,
+                              page    : 1 });
+      tickets.done(_.bind(function(tkts){
+        this.getLogsFromTickets(tkts);
+      }, this));
     },
-    getLogsFromTickets: function(data) {
-      var tickets = data.tickets;
+    getLogsFromTickets: function(tkts) {
       this.ticketAudits = [];
 
       //loop through each ticket in the array
-      _.each(tickets, function (ticket) {
-        this.ajax('getTicketAuditsByID', ticket.id);
-
-        //TODO: if the ticket is the last in the array send some signal to stop so parseAudits can be triggered
-      });
+      _.each(tkts, function (tkt) {
+        this.ajax('getTicketAudits', tkt.id, 1);
+        var tkt_id = tkt.id;
+        var audits = this.paginate({request : 'getTicketAudits',
+                              entity  : 'audits',
+                              id      : tkt_id,
+                              page    : 1 });
+        audits.done(_.bind(function(audits){
+          this.parseAudits(audits);
+        }, this));
+      }.bind(this));
 
       
     },
@@ -184,10 +198,10 @@
         }
       }
     },
-    parseAudits: function () {
-      var total_time_field = this.setting('total_time_field_id'),
-        billable_time_field = this.setting('billable_time_field_id'),
-        external_time_field = this.setting('external_time_field_id');
+    parseAudits: function (audits) {
+      var total_time_field = this.setting('total_time_field_id').toString(),
+        billable_time_field = this.setting('billable_time_field_id').toString(),
+        external_time_field = this.setting('external_time_field_id').toString();
 
       var getDelta = function(event) {
         var delta = event.value - event.previous_value;
@@ -199,22 +213,23 @@
         external_time_entries = [],
         event_entries = [];
 
+      var date_field = this.setting('date_field_id').toString(),
+        start_date = Date.parse(this.$('.start_date').val()),
+        end_date = Date.parse(this.$('.end_date').val());
+      //console.log(audits);
       //the stage is set, now iterate over all the audits, grab those in range, and build them into logs  
-      _.each(this.ticketAudits, function(audit) {
-        var date_field = this.setting('date_field_id'),
-          start_date = Date.parse(this.$('.start_date').val()),
-          end_date = Date.parse(this.$('.end_date').val()),
-          
-          date_field_event = _.where(audit.events, {field_name: date_field}),
+      _.each(audits, function(audit) {
+        var date_field_event = _.filter(audit.events, function(event){ return event.field_name === date_field ;}),//_.where(audit.events, {field_name: date_field}),
           date_value = Date.parse(date_field_event.value);
-
+        console.log("Start date: " + start_date);
+        console.log("Date value: " + date_value);
+        console.log("End date: " + end_date);
         if(date_value >= start_date && date_value <= end_date) {
         //IF the date field value in this audit is between the start and end dates...
-        
-          var total_time_event = _.where(audit.events, {field_name: total_time_field}),
-            billable_time_event = _.where(audit.events, {field_name: billable_time_field}),
-            external_time_event = _.where(audit.events, {field_name: external_time_field});
-          //TODO refactor: if this works without error change where to findWhere for efficiency
+          console.log(date_field_event);
+          var total_time_event = _.filter(audit.events, function(event){ return event.field_name === total_time_field ;}), //_.where(audit.events, {field_name: total_time_field}),
+            billable_time_event = _.filter(audit.events, function(event){ return event.field_name === billable_time_field ;}), //_.where(audit.events, {field_name: billable_time_field}),
+            external_time_event = _.filter(audit.events, function(event){ return event.field_name === external_time_field ;}); //_.where(audit.events, {field_name: external_time_field});
 
           var total_delta = getDelta(total_time_event),
             billable_delta = getDelta(billable_time_event),
@@ -227,14 +242,19 @@
             'date': date_value
           };
 
+          console.log(compound_entry);
           total_time_entries.push(total_delta);
           billable_time_entries.push(billable_delta);
           external_time_entries.push(external_delta);
           event_entries.push(compound_entry);
         }
       });
-      console.log(event_entries);
+      //console.log(event_entries);
     },
+    onTicketUpdateSuccess: function() {
+      services.notify("Ticket successfully updated with time log. Refresh to see changes.");
+    },
+
     // ##Helpers
     totalTimeFieldLabel: function() {
       return this.buildFieldLabel(this.setting('total_time_field_id'));
@@ -251,33 +271,33 @@
     buildFieldLabel: function(id) {
       return helpers.fmt('custom_field_%@', id);
     },
-    // paginate: function(a) {
-    //   var results = [];
-    //   var initialRequest = this.ajax(a.request, a.id, a.page);
-    //   // create and return a promise chain of requests to subsequent pages
-    //   var allPages = initialRequest.then(function(data){
-    //     results.push(data[a.entity]);
-    //     var nextPages = [];
-    //     var pageCount = Math.ceil(data.count / 100);
-    //     for (; pageCount > 1; --pageCount) {
-    //       nextPages.push(this.ajax(a.request, a.id, pageCount));
-    //     }
-    //     return this.when.apply(this, nextPages).then(function(){
-    //       var entities = _.chain(arguments)
-    //                       .flatten()
-    //                       .filter(function(item){ return (_.isObject(item) && _.has(item, a.entity)); })
-    //                       .map(function(item){ return item[a.entity]; })
-    //                       .value();
-    //       results.push(entities);
-    //     }).then(function(){
-    //       return _.chain(results)
-    //               .flatten()
-    //               .compact()
-    //               .value();
-    //     });
-    //   });
-    //   return allPages;
-    // }
+    paginate: function(a) {
+      var results = [];
+      var initialRequest = this.ajax(a.request, a.id, a.page);
+      // create and return a promise chain of requests to subsequent pages
+      var allPages = initialRequest.then(function(data){
+        results.push(data[a.entity]);
+        var nextPages = [];
+        var pageCount = Math.ceil(data.count / 100);
+        for (; pageCount > 1; --pageCount) {
+          nextPages.push(this.ajax(a.request, a.id, pageCount));
+        }
+        return this.when.apply(this, nextPages).then(function(){
+          var entities = _.chain(arguments)
+                          .flatten()
+                          .filter(function(item){ return (_.isObject(item) && _.has(item, a.entity)); })
+                          .map(function(item){ return item[a.entity]; })
+                          .value();
+          results.push(entities);
+        }).then(function(){
+          return _.chain(results)
+                  .flatten()
+                  .compact()
+                  .value();
+        });
+      });
+      return allPages;
+    }
   };
 
 }());

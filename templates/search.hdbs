@@ -2,7 +2,7 @@
   <ul class="org_list">
     <li class="org_list header">
       <span class="field">
-        Find Organization: <input type="search" class="search" id="input" name="search_orgs"></input>
+        Find Organization: <input class="search_field" type="search" id="input" name="search_orgs"></input>
       </span>
       <span class="field">
         Start Date (UTC): <input class="start_date" name="start_date"></input> 
