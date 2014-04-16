@@ -2,7 +2,7 @@
   <form>
   <li class="time">
     <span class="field">
-      Amount of time (hrs): <input type="number" class="time" name="time" step=".25" autofocus>
+      Amount of time (hrs): <input type="number" class="time" name="time" step=".25" autofocus required>
     </span>
   </li>
   <li class="external">
@@ -31,6 +31,6 @@
   </form>
   <br>
   <li class="actions">
-    <button class="cancel_button btn">Cancel</button> | <button class="log_time btn">Log Time</button>
+    <button class="cancel_button btn">Cancel</button> | <button class="log_time btn btn-primary">Log Time</button>
   </li>
 </ul>

@@ -4,11 +4,15 @@
     // #Events
     events: {
       'app.activated':'loadDefault',
+      
       'click .default':'loadTime',
       'click .cancel_button':'loadDefault',
       'click .log_time':'buildLog',
       'updateTicket.done':'onTicketUpdateSuccess',
 
+      'click .search_field':'loadSearch',
+      'click .start_date':'loadSearch',
+      'click .end_date':'loadSearch',
       'keyup #input':'onSearchChanged',
       'getOrgsAuto.done':'handleOrgs',
       'click .org':'handleOrgSelection',
@@ -56,7 +60,7 @@
     loadDefault: function() {
       var currentLocation = this.currentLocation();
       console.log("Location: " + currentLocation);
-      var daysBack = this.setting('days_back');
+      
       if (currentLocation == 'ticket_sidebar') {
         this.disableFields();
         this.switchTo('form');
@@ -64,11 +68,16 @@
       } else if (currentLocation == 'nav_bar') {
         console.log("Detected nav bar location");
         this.switchTo('search');
-        var start_date = new Date(new Date().setDate(new Date().getDate() - daysBack));
-        this.$('.start_date').datepicker().datepicker("setDate", start_date);
-        this.$('.end_date').datepicker();
-        this.$('.end_date').datepicker("setDate", new Date());
+        this.loadSearch();
+        
       }
+    },
+    loadSearch: function() {
+      var daysBack = this.setting('days_back');
+      var start_date = new Date(new Date().setDate(new Date().getDate() - daysBack));
+      this.$('.start_date').datepicker().datepicker("setDate", start_date);
+      this.$('.end_date').datepicker();
+      this.$('.end_date').datepicker("setDate", new Date());
     },
     loadTime: function() {
 
@@ -107,11 +116,21 @@
       this.buildUpdate(log);
     },
     buildUpdate: function(log) {
+      console.log(log.units);
+
+      if(!log.units) {
+        services.notify("No time specified. Please fill in the 'Amount of Time' field before submitting.", "error");
+        return;
+      }
+      if(!log.date) {
+        services.notify("No date specified. Please fill in the 'Date delivered' field before submitting.", "error");
+        return;
+      }
       var tkt = this.ticket(),
         id = tkt.id(),
-        total_time = ( log.units + parseFloat(tkt.customField(this.totalTimeFieldLabel()), 10)),
-        billable_time = ( log.billable_time + parseFloat(tkt.customField(this.billableTimeFieldLabel()), 10)),
-        external_time = ( log.external_time + parseFloat(tkt.customField(this.externalTimeFieldLabel()), 10)),
+        total_time = ( log.units + parseFloat(tkt.customField(this.totalTimeFieldLabel()) || 0, 10)),
+        billable_time = ( log.billable_time + parseFloat(tkt.customField(this.billableTimeFieldLabel()) || 0, 10)),
+        external_time = ( log.external_time + parseFloat(tkt.customField(this.externalTimeFieldLabel()) || 0, 10)),
         update = {"ticket": {
           "metadata": {
             "time_logged": true,
@@ -136,13 +155,15 @@
           }
         ]}
       };
+      console.log(total_time);
       var payload = JSON.stringify(update);
       console.log(payload);
       this.ajax('updateTicket', payload);
     },
     onTicketUpdateSuccess: function(response) {
       services.notify("Ticket successfully updated with time log. Refresh to see changes.");
-      console.log("Ticket successfully updated.");
+      // console.log("Ticket successfully updated.");
+
       // hide the specified ticket fields?
       _.each([this.totalTimeFieldLabel(), this.billableTimeFieldLabel(), this.externalTimeFieldLabel()], function(f) {
         var field = this.ticketFields(f);
@@ -186,11 +207,18 @@
     handleOrgSelection: function(e) {
       if (e) {e.preventDefault();}
       // console.log(e.currentTarget.value);
-      var org_id = e.currentTarget.value;
-      this.org_name = e.currentTarget.innerHTML;
-      //this.ajax('getOrgTickets', this.org_id);
-      this.$('input.search_field').val(this.org_id);
+      var org_id = e.currentTarget.value,
+        org_name = e.currentTarget.innerHTML;
+      
+
+
+
+
+      this.$('input.search_field').val(org_id);
+      // this.$('input.search_field').value = this.org_name;
       this.getListOfTickets(org_id);
+
+
     },
     getListOfTickets: function(org_id) {
       //var org_id = this.$('input.search_field').val();
