@@ -3,6 +3,14 @@ ul {
   li.actions {
     text-align: right;
   }
+  li.ticket {
+    span {
+      margin-left: 10px;
+    }
+  }
+  li.entry {
+    margin-left:10px;
+  }
   li {
     width: 100%;
     margin-bottom: 20px;

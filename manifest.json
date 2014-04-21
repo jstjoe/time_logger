@@ -11,6 +11,11 @@
   "frameworkVersion": "1.0",
   "parameters":[
     {
+      "name":"loading_page",
+      "type":"checkbox",
+      "default":false
+    },
+    {
       "name":"total_time_field_id",
       "type":"number",
       "required":true,

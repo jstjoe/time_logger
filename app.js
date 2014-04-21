@@ -3,10 +3,11 @@
   return {
     // #Events
     events: {
-      'app.activated':'loadDefault',
-      
+      'app.activated':'onAppActivated',
+      'pane.activated':'onPaneActivated',
+
       'click .default':'loadTime',
-      'click .cancel_button':'loadDefault',
+      'click .cancel_button':'onAppActivated',
       'click .log_time':'buildLog',
       'updateTicket.done':'onTicketUpdateSuccess',
 
@@ -57,20 +58,27 @@
     },
 
     // #Functions
-    loadDefault: function() {
+    onAppActivated: function(data) {
       var currentLocation = this.currentLocation();
-      console.log("Location: " + currentLocation);
+      var loadingPage = this.setting('loading_page');
+      console.log("App.Activated", "Location: " + currentLocation, "firstLoad?" + data.firstLoad);
       
-      if (currentLocation == 'ticket_sidebar') {
+      if (currentLocation == 'ticket_sidebar' && data.firstLoad && !loadingPage) {
+        console.log("Hiding fields, switching to form template, setting dates");
         this.disableFields();
         this.switchTo('form');
         this.$('.date').datepicker().datepicker("setDate", new Date());
-      } else if (currentLocation == 'nav_bar') {
-        console.log("Detected nav bar location");
+      } else if (currentLocation == 'ticket_sidebar' && data.firstLoad) {
+        this.switchTo('default');
+      }
+    },
+    onPaneActivated: function(data) {
+      console.log("Pane.Activated", "firstLoad?" + data.firstLoad);
+      if(data.firstLoad) {
         this.switchTo('search');
         this.loadSearch();
-        
       }
+      
     },
     loadSearch: function() {
       var daysBack = this.setting('days_back');
@@ -79,9 +87,11 @@
       this.$('.end_date').datepicker();
       this.$('.end_date').datepicker("setDate", new Date());
     },
-    loadTime: function() {
-
+    loadTime: function(e) {
+      if (e) {e.preventDefault();}
+      this.disableFields();
       this.switchTo('form');
+      this.$('.date').datepicker().datepicker("setDate", new Date());
     },
 
     // ##Methods
@@ -270,15 +280,18 @@
             // external_time_entries = [];
 
             //calculate sums and add them to the object below
-          this.ticketsWithLogs[tkt_id] = {
-            "entries": eventEntries,
-            "sum_total": sum_total_time_entries,
-            "sum_billable": sum_billable_time_entries,
-            "sum_non_billable": sum_non_billable,
-            "sum_external": sum_external_time_entries,
-            "sum_internal": sum_internal
+          if(sum_total_time_entries !== 0) {
+            this.ticketsWithLogs[tkt_id] = {
+              "entries": eventEntries,
+              "sum_total": sum_total_time_entries,
+              "sum_billable": sum_billable_time_entries,
+              "sum_non_billable": sum_non_billable,
+              "sum_external": sum_external_time_entries,
+              "sum_internal": sum_internal
 
-          };
+            };
+          }
+          
           // console.log("Calling parse audits for ticket " + tkt_id);
           // console.log(this.ticketsWithLogs[tkt_id]);
           // console.log(this.ticketsWithLogs);
@@ -292,6 +305,9 @@
       
     },
     listTickets: function (tickets) {
+      //calculate the sum for the whole set of matching tickets
+      
+      
       this.switchTo('results', {
         tickets: this.ticketsWithLogs
       });
@@ -364,7 +380,8 @@
               // external_delta = getDelta(external_time_event[0]) || 0;
 
             
-
+            var local = new Date(date_value),
+              custom_date = local.toDateString();
             // console.log(compound_entry);
             // total_time_entries.push(total_delta);
             // billable_time_entries.push(billable_delta);
@@ -374,7 +391,7 @@
               'total_time': total_delta,
               'billable_time': billable_delta,
               'external_time': external_delta,
-              'date': date_value
+              'date': custom_date
             };
             event_entries.push(compound_entry);
           }

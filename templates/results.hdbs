@@ -1,11 +1,19 @@
+
 <ul class="tickets">
   {{#each tickets}}
     <li class="ticket">
       <h4>Ticket: {{@key}}</h4>
-      Total: {{sum_total}} Billable: {{sum_billable}} Non-billable: {{sum_non_billable}} External: {{sum_external}} Internal: {{sum_internal}} <br>
+      <strong>
+        <span>Total: {{sum_total}} </span>
+        <span>Billable: {{sum_billable}}</span>
+        <span>Non-billable: {{sum_non_billable}}</span>
+        <span>External: {{sum_external}}</span>
+        <span>Internal: {{sum_internal}}</span>
+      </strong>
+      <h4>Logs</h4>
       <ul class="entries">
         {{#each entries}}
-          <li>Date: {{date}} | Total: {{total_time}} | Billable: {{billable_time}} | External: {{external_time}}</li>
+          <li class="entry">Date: {{date}} | Total: {{total_time}} | Billable: {{billable_time}} | External: {{external_time}}</li>
         {{/each}}
       </ul>
     </li>
