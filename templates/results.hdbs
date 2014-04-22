@@ -24,10 +24,12 @@
         <table class="table table-striped table-bordered">
           <thead>
             <tr class="entry">
-              <th>Date </th>
+              <th width="100px">Date </th>
               <th>Total </th>
               <th>Billable </th>
+              <th>Non-Billable </th>
               <th>External </th>
+              <th>Internal </th>
             </tr>
           </thead>
           <tbody>
@@ -36,7 +38,9 @@
                 <td>{{date}} </td>
                 <td>{{total_time}} </td>
                 <td>{{billable_time}} </td>
+                <td>{{non_billable_time}} </td>
                 <td>{{external_time}} </td>
+                <td>{{internal_time}} </td>
               </tr>
             {{/each}}
           </tbody>

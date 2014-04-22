@@ -200,6 +200,7 @@
       this.$('input.search_field').val(org_id);
     },
     getListOfTickets: function(org_id) {
+
       var tickets = this.paginate({request : 'getOrgTickets',
                               entity  : 'tickets',
                               id      : org_id,
@@ -207,6 +208,7 @@
       tickets.done(_.bind(function(tkts){
         this.getLogsFromTickets(tkts);
       }, this));
+      // this.switchTo('loading');
     },
     getLogsFromTickets: function(tkts) {
       this.ticketsWithLogs = {};
@@ -273,6 +275,8 @@
     listTickets: function (tickets) {
       var org_id = this.$('input.search_field').val();
       this.getListOfTickets(org_id);
+      this.$('span.loading').show();
+
     },
     parseAudits: function (audits) {
       var total_time_field = this.setting('total_time_field_id').toString(),
@@ -312,7 +316,9 @@
             //IF the event exists
             var total_delta,
               billable_delta,
-              external_delta;
+              non_billable_delta,
+              external_delta,
+              internal_delta;
             if (total_time_event[0]) {
               total_delta = getDelta(total_time_event[0]);
             } else {
@@ -328,12 +334,17 @@
             } else {
               external_delta = 0;
             }
+            non_billable_delta = total_delta - billable_delta;
+            internal_delta = total_delta - external_delta;
             var local = new Date(date_value),
               date_string = local.toLocaleDateString();
+
             var compound_entry = {
               'total_time': total_delta,
               'billable_time': billable_delta,
+              'non_billable_time': non_billable_delta,
               'external_time': external_delta,
+              'internal_time': internal_delta,
               'date': date_string,
               'ticket_id': audit.ticket_id
             };

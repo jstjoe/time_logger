@@ -10,6 +10,10 @@
       <span class="field">
         End Date (UTC): <input class="end_date" name="end_date"></input> | <button class="search btn btn-primary" id="enter" disabled>Search</button>
       </span>
+      
+    </li>
+    <li>
+      <span class="loading">{{spinner "dotted"}}</span>
     </li>
     <li>
       <div class="org_results">
