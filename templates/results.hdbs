@@ -1,51 +1,57 @@
-<div class="csv">
-  <button class="back btn">Back</button> <a href="data:application/octet-stream,Ticket%2CDate%2CTotal%2CBillable%2CNon-billabe%2CExternal%2CInternal%0A{{#each tickets}}{{#each entries}}#{{ticket_id}}%2C{{date}}%2C{{total_time}}%2C{{billable_time}}%2C{{non_billable_time}}%2C{{external_time}}%2C{{internal_time}}%0A{{/each}}{{/each}}" download="{{org_name}} time entries.csv" class="btn">Download CSV of Logs</a>
-</div><br>
-<div>
-<h2>{{org_name}}</h2>
-{{#org_totals}}
-  <strong>Total:</strong> {{total_time}} | <strong>Billable:</strong> {{billable_time}} | <strong>Non-billable:</strong> {{non_billable_time}} | <strong>External:</strong> {{external_time}} | <strong>Internal:</strong> {{internal_time}}
-{{/org_totals}}
-<br><br>
-</div>
-<div class="col-md-8">
-  <ul class="tickets">
-    {{#each tickets}}
-      <li class="ticket">
-        <h3>Ticket: <a href='/tickets/{{id}}'>#{{id}}</a></h3>
-        
-          <span><strong>Total:</strong> {{sum_total}} </span>
-          <span><strong>Billable:</strong> {{sum_billable}}</span>
-          <span><strong>Non-billable:</strong> {{sum_non_billable}}</span>
-          <span><strong>External:</strong> {{sum_external}}</span>
-          <span><strong>Internal:</strong> {{sum_internal}}</span>
-        
-        <br><br>
-        <table class="table table-bordered">
-          <thead>
-            <tr class="entry">
-              <th width="100px">Date </th>
-              <th>Total </th>
-              <th>Billable </th>
-              <th>Non-Billable </th>
-              <th>External </th>
-              <th>Internal </th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each entries}}
-              <tr>
-                <td>{{date}} </td>
-                <td>{{total_time}} </td>
-                <td>{{billable_time}} </td>
-                <td>{{non_billable_time}} </td>
-                <td>{{external_time}} </td>
-                <td>{{internal_time}} </td>
+<div class="container-fluid">
+  <div class="csv">
+    <button class="back btn">Back</button> <a href="data:application/octet-stream,Ticket%2CDate%2CTotal%2CBillable%2CNon-billabe%2CExternal%2CInternal%0A{{#each tickets}}{{#each entries}}#{{ticket_id}}%2C{{date}}%2C{{total_time}}%2C{{billable_time}}%2C{{non_billable_time}}%2C{{external_time}}%2C{{internal_time}}%0A{{/each}}{{/each}}" download="{{org_name}} time entries.csv" class="btn">Download CSV</a>
+  </div><br>
+  <div class="totals">
+  <h2>{{org_name}}</h2>
+  {{#org_totals}}
+    <h3><span><strong>Total:</strong> {{total_time}} hrs</span></h3>
+    <h4><span><strong>Billable:</strong> {{billable_time}} hrs</span>
+    <span><strong>Non-billable:</strong> {{non_billable_time}} hrs</span>
+    <span><strong>External:</strong> {{external_time}} hrs</span>
+    <span><strong>Internal:</strong> {{internal_time}} hrs</span></h4>
+  {{/org_totals}}
+  <br><br>
+  </div>
+  <div class="col-md-8">
+    <ul class="tickets">
+      {{#each tickets}}
+        <li class="ticket">
+          <h3>Ticket: <a href='/tickets/{{id}}'>#{{id}}</a></h3>
+          
+            <span><strong>Total:</strong> {{sum_total}} hrs</span>
+            <span><strong>Billable:</strong> {{sum_billable}} hrs</span>
+            <span><strong>Non-billable:</strong> {{sum_non_billable}} hrs</span>
+            <span><strong>External:</strong> {{sum_external}} hrs</span>
+            <span><strong>Internal:</strong> {{sum_internal}} hrs</span>
+          
+          <br><br>
+          <table class="entries table table-bordered">
+            <thead>
+              <tr class="entry">
+                <th width="100px">Date </th>
+                <th>Total </th>
+                <th>Billable </th>
+                <th>Non-billable </th>
+                <th>External </th>
+                <th>Internal </th>
               </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </li>
-    {{/each}}
-  </ul>
+            </thead>
+            <tbody>
+              {{#each entries}}
+                <tr>
+                  <td>{{date}} </td>
+                  <td>{{total_time}} </td>
+                  <td>{{billable_time}} </td>
+                  <td>{{non_billable_time}} </td>
+                  <td>{{external_time}} </td>
+                  <td>{{internal_time}} </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
 </div>

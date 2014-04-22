@@ -2,6 +2,5 @@
   <span class="logo"/>
   <h3>{{setting "name"}}</h3>
 </header>
-<div class="container-fluid">
-  <section data-main/>
-</div>
+
+<section data-main/>

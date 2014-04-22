@@ -33,12 +33,21 @@ div.org_results {
 }
 
 table.entries {
-  border: 1px solid black;
-  padding: 8px;
+  max-width: 700px;
 }
 span.loading {
   display: none;
 }
 span.no_tickets {
   display: none;
+}
+div.totals {
+  span {
+    margin-left: 10px;
+  }
+}
+li.org_list {
+  span.field {
+    margin-left: 10px;
+  }
 }
