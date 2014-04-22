@@ -195,8 +195,8 @@
       if (e) {e.preventDefault();}
       this.$('.org').hide();
       this.$('.search').removeAttr('disabled');
-      var org_id = e.currentTarget.value,
-        org_name = e.currentTarget.innerHTML;
+      var org_id = e.currentTarget.value;
+      this.org_name = e.currentTarget.innerHTML;
       this.$('input.search_field').val(org_id);
     },
     getListOfTickets: function(org_id) {
@@ -248,13 +248,26 @@
               "url": tkt.url
             };
           }
+
           if(i == tkts.length - 1) {
+            var org_totals = {
+              "total_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_total; }, 0),
+              "billable_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_billable; }, 0),
+              "non_billable_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_non_billable; }, 0),
+              "external_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_external; }, 0),
+              "internal_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_internal; }, 0)
+            };
+            console.log(this.ticketsWithLogs);
             this.switchTo('results', {
-              tickets: this.ticketsWithLogs
+              tickets: this.ticketsWithLogs,
+              org_totals: org_totals,
+              org_name: this.org_name
             });
           }
           i++;
         }, this));
+        
+
       }.bind(this));
     },
     listTickets: function (tickets) {
