@@ -256,7 +256,7 @@
       }.bind(this));
     },
     listTickets: function (tickets) {
-      //calculate the sum for the whole set of matching tickets
+      var org_id = this.$('input.search_field').val();
       this.getListOfTickets(org_id);
     },
     parseAudits: function (audits) {
