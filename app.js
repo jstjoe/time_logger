@@ -11,13 +11,11 @@
       'click .log_time':'buildLog',
       'updateTicket.done':'onTicketUpdateSuccess',
 
-      'click .search_field':'loadSearch',
-      'click .start_date':'loadSearch',
-      'click .end_date':'loadSearch',
       'keyup #input':'onSearchChanged',
       'getOrgsAuto.done':'handleOrgs',
       'click .org':'handleOrgSelection',
       'click .search':'listTickets',
+      'click .back':'loadSearch'
     },
 
     // #Requests
@@ -75,12 +73,12 @@
     onPaneActivated: function(data) {
       console.log("Pane.Activated", "firstLoad?" + data.firstLoad);
       if(data.firstLoad) {
-        this.switchTo('search');
         this.loadSearch();
       }
       
     },
     loadSearch: function() {
+      this.switchTo('search');
       var daysBack = this.setting('days_back');
       var start_date = new Date(new Date().setDate(new Date().getDate() - daysBack));
       this.$('.start_date').datepicker().datepicker("setDate", start_date);
@@ -216,14 +214,11 @@
     },
     handleOrgSelection: function(e) {
       if (e) {e.preventDefault();}
+      this.$('.org').hide();
+      this.$('.search').removeAttr('disabled');
       // console.log(e.currentTarget.value);
       var org_id = e.currentTarget.value,
         org_name = e.currentTarget.innerHTML;
-      
-
-
-
-
       this.$('input.search_field').val(org_id);
       // this.$('input.search_field').value = this.org_name;
       this.getListOfTickets(org_id);
@@ -381,7 +376,7 @@
 
             
             var local = new Date(date_value),
-              custom_date = local.toDateString();
+              date_string = local.toLocaleDateString();
             // console.log(compound_entry);
             // total_time_entries.push(total_delta);
             // billable_time_entries.push(billable_delta);
@@ -391,7 +386,8 @@
               'total_time': total_delta,
               'billable_time': billable_delta,
               'external_time': external_delta,
-              'date': custom_date
+              'date': date_string,
+              'ticket_id': audit.ticket_id
             };
             event_entries.push(compound_entry);
           }

@@ -8,7 +8,7 @@
         Start Date (UTC): <input class="start_date" name="start_date"></input> 
       </span>
       <span class="field">
-        End Date (UTC): <input class="end_date" name="end_date"></input> | <button class="search btn btn-primary" id="enter">Search</button><input></input>
+        End Date (UTC): <input class="end_date" name="end_date"></input> | <button class="search btn btn-primary" id="enter" disabled>Search</button>
       </span>
     </li>
     <li>

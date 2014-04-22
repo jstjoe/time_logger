@@ -11,6 +11,9 @@ ul {
   li.entry {
     margin-left:10px;
   }
+  li.org {
+    cursor: pointer;
+  }
   li {
     width: 100%;
     margin-bottom: 20px;
@@ -24,4 +27,17 @@ ul {
   li:last-child {
     margin-bottom: 0;
   }
+}
+div.org_results {
+    margin-left: 130px;
+}
+
+table.entries {
+  border: 1px solid black;
+  padding: 10px;
+  border-radius:5px;
+}
+th, td {
+  border: 1px solid black;
+  padding: 10px;
 }

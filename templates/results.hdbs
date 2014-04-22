@@ -1,21 +1,39 @@
-
+<div class="csv">
+  <button class="back btn">Back</button> <a href="data:application/octet-stream,Ticket%2CDate%2CTotal%2CBillable%2CExternal%0A{{#each tickets}}{{#each entries}}#{{ticket_id}}%2C{{date}}%2C{{total_time}}%2C{{billable_time}}%2C{{external_time}}%0A{{/each}}{{/each}}" download="satisfaction_ratings.csv" class="btn">Download CSV of Logs</a>
+</div><br>
 <ul class="tickets">
   {{#each tickets}}
     <li class="ticket">
       <h4>Ticket: {{@key}}</h4>
-      <strong>
-        <span>Total: {{sum_total}} </span>
-        <span>Billable: {{sum_billable}}</span>
-        <span>Non-billable: {{sum_non_billable}}</span>
-        <span>External: {{sum_external}}</span>
-        <span>Internal: {{sum_internal}}</span>
-      </strong>
-      <h4>Logs</h4>
-      <ul class="entries">
-        {{#each entries}}
-          <li class="entry">Date: {{date}} | Total: {{total_time}} | Billable: {{billable_time}} | External: {{external_time}}</li>
-        {{/each}}
-      </ul>
+      
+        <span><strong>Total:</strong> {{sum_total}} </span>
+        <span><strong>Billable:</strong> {{sum_billable}}</span>
+        <span><strong>Non-billable:</strong> {{sum_non_billable}}</span>
+        <span><strong>External:</strong> {{sum_external}}</span>
+        <span><strong>Internal:</strong> {{sum_internal}}</span>
+      
+      <br><br>
+      <table class="entries">
+        <thead>
+          <tr class="entry">
+            <th>Date </th>
+            <th>Total </th>
+            <th>Billable </th>
+            <th>External </th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each entries}}
+            <tr>
+              <td>{{date}} </td>
+              <td>{{total_time}} </td>
+              <td>{{billable_time}} </td>
+              <td>{{external_time}} </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </li>
   {{/each}}
 </ul>
+
