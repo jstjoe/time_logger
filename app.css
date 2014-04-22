@@ -39,3 +39,6 @@ table.entries {
 span.loading {
   display: none;
 }
+span.no_tickets {
+  display: none;
+}

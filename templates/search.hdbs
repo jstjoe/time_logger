@@ -12,13 +12,15 @@
       </span>
       
     </li>
-    <li>
-      <span class="loading">{{spinner "dotted"}}</span>
-    </li>
+    
     <li>
       <div class="org_results">
         <!--inject organizations here-->
       </div>
+    </li><br><br>
+    <li>
+      <span class="loading">{{spinner "dotted"}}</span>
+      <span class="no_tickets">This organization has no tickets with updates in the given date range.</span>
     </li>
   </ul>
 </div>

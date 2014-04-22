@@ -180,6 +180,7 @@
           "payload":"\"{'name': '" + name + "'}\""
         };
         this.ajax('getOrgsAuto',query);
+        this.$("span.no_tickets").hide();
       } else {
         //this.$("div.org_results").html("");
       }
@@ -206,7 +207,14 @@
                               id      : org_id,
                               page    : 1 });
       tickets.done(_.bind(function(tkts){
-        this.getLogsFromTickets(tkts);
+        if(tkts.length !== 0) {
+          this.getLogsFromTickets(tkts);
+        } else {
+          console.log("This org has no tickets" + tkts);
+          this.$('span.loading').hide();
+          this.$("span.no_tickets").show();
+        }
+        
       }, this));
       // this.switchTo('loading');
     },
@@ -250,7 +258,6 @@
               "url": tkt.url
             };
           }
-
           if(i == tkts.length - 1) {
             var org_totals = {
               "total_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_total; }, 0),
@@ -275,6 +282,7 @@
     listTickets: function (tickets) {
       var org_id = this.$('input.search_field').val();
       this.getListOfTickets(org_id);
+
       this.$('span.loading').show();
 
     },
