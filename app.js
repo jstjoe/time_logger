@@ -243,7 +243,9 @@
               "sum_billable": sum_billable_time_entries,
               "sum_non_billable": sum_non_billable,
               "sum_external": sum_external_time_entries,
-              "sum_internal": sum_internal
+              "sum_internal": sum_internal,
+              "id": tkt_id,
+              "url": tkt.url
             };
           }
           if(i == tkts.length - 1) {
