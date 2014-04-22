@@ -221,7 +221,7 @@
         org_name = e.currentTarget.innerHTML;
       this.$('input.search_field').val(org_id);
       // this.$('input.search_field').value = this.org_name;
-      this.getListOfTickets(org_id);
+      // this.getListOfTickets(org_id);
 
 
     },
@@ -242,6 +242,7 @@
       this.ticketsWithLogs = {};
 
       //loop through each ticket in the array
+      var i = 0;
       _.each(tkts, function (tkt) {
         // this.ajax('getTicketAudits', tkt.id, 1);
         var tkt_id = tkt.id.toString();
@@ -286,7 +287,14 @@
 
             };
           }
-          
+          // console.log(i);
+          if(i == tkts.length - 1) {
+            console.log("End of loop " + tkt.id);
+            this.switchTo('results', {
+              tickets: this.ticketsWithLogs
+            });
+          }
+          i++;
           // console.log("Calling parse audits for ticket " + tkt_id);
           // console.log(this.ticketsWithLogs[tkt_id]);
           // console.log(this.ticketsWithLogs);
@@ -301,11 +309,11 @@
     },
     listTickets: function (tickets) {
       //calculate the sum for the whole set of matching tickets
+      this.getListOfTickets(org_id);
       
-      
-      this.switchTo('results', {
-        tickets: this.ticketsWithLogs
-      });
+      // this.switchTo('results', {
+      //   tickets: this.ticketsWithLogs
+      // });
     },
     parseAudits: function (audits) {
       var total_time_field = this.setting('total_time_field_id').toString(),

@@ -4,7 +4,7 @@
 <ul class="tickets">
   {{#each tickets}}
     <li class="ticket">
-      <h4>Ticket: {{@key}}</h4>
+      <h3>Ticket: {{@key}}</h3>
       
         <span><strong>Total:</strong> {{sum_total}} </span>
         <span><strong>Billable:</strong> {{sum_billable}}</span>
