@@ -1,5 +1,5 @@
 <div class="csv">
-  <button class="back btn">Back</button> <a href="data:application/octet-stream,Ticket%2CDate%2CTotal%2CBillable%2CExternal%0A{{#each tickets}}{{#each entries}}#{{ticket_id}}%2C{{date}}%2C{{total_time}}%2C{{billable_time}}%2C{{external_time}}%0A{{/each}}{{/each}}" download="{{org_name}} time entries.csv" class="btn">Download CSV of Logs</a>
+  <button class="back btn">Back</button> <a href="data:application/octet-stream,Ticket%2CDate%2CTotal%2CBillable%2CNon-billabe%2CExternal%2CInternal%0A{{#each tickets}}{{#each entries}}#{{ticket_id}}%2C{{date}}%2C{{total_time}}%2C{{billable_time}}%2C{{non_billable_time}}%2C{{external_time}}%2C{{internal_time}}%0A{{/each}}{{/each}}" download="{{org_name}} time entries.csv" class="btn">Download CSV of Logs</a>
 </div><br>
 <div>
 <h2>{{org_name}}</h2>
