@@ -210,7 +210,6 @@
         if(tkts.length !== 0) {
           this.getLogsFromTickets(tkts);
         } else {
-          console.log("This org has no tickets" + tkts);
           this.$('span.loading').hide();
           this.$("span.no_tickets").show();
         }
@@ -266,7 +265,6 @@
               "external_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_external; }, 0),
               "internal_time": _.reduce(this.ticketsWithLogs, function(memo, tkt){ return memo + tkt.sum_internal; }, 0)
             };
-            console.log(this.ticketsWithLogs);
             this.switchTo('results', {
               tickets: this.ticketsWithLogs,
               org_totals: org_totals,
